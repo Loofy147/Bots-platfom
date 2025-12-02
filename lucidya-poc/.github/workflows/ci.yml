@@ -1,0 +1,17 @@
+name: Build NLP Worker
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build the Docker image
+      run: docker build ./nlp-worker --file ./nlp-worker/Dockerfile --tag nlp-worker:$(date +%s)

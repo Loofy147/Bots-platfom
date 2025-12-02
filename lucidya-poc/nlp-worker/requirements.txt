@@ -1,0 +1,10 @@
+opensearch-py
+redis
+fastapi
+uvicorn
+python-multipart
+requests
+camel-tools
+transformers
+sentence-transformers
+bertopic
