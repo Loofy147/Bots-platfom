@@ -5,6 +5,10 @@ from fastapi import FastAPI, Request
 from opensearchpy import OpenSearch
 import redis
 import threading
+from transformers import pipeline
+
+# Load sentiment analysis model
+sentiment_analyzer = pipeline("sentiment-analysis")
 
 # Configuration
 OPENSEARCH_HOST = os.environ.get('OPENSEARCH_HOST', 'http://localhost:9200')
@@ -29,10 +33,11 @@ async def ingest_data(request: Request):
 
 def nlp_pipeline(doc):
     """
-    Placeholder for a real NLP pipeline.
-    This should perform sentiment analysis, NER, topic modeling, etc.
+    Performs sentiment analysis on the 'text' field of a document.
     """
-    # For now, just return the raw document
+    if "text" in doc and isinstance(doc["text"], str):
+        sentiment = sentiment_analyzer(doc["text"])
+        doc['sentiment'] = sentiment
     return {"processed": True, "raw": doc}
 
 def worker_loop():
