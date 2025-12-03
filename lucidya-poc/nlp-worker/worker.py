@@ -6,9 +6,12 @@ from opensearchpy import OpenSearch
 import redis
 import threading
 from transformers import pipeline
+from pyabsa import AspectTermExtraction as ATEPC
 
 # Load sentiment analysis model
-sentiment_analyzer = pipeline("sentiment-analysis")
+sentiment_analyzer = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment")
+emotion_detector = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base", return_all_scores=True)
+aspect_extractor = ATEPC.AspectExtractor("english")
 
 # Configuration
 OPENSEARCH_HOST = os.environ.get('OPENSEARCH_HOST', 'http://localhost:9200')
@@ -58,11 +61,19 @@ async def ingest_tweets(request: Request):
 
 def nlp_pipeline(doc):
     """
-    Performs sentiment analysis on the 'text' field of a document.
+    Performs sentiment analysis, emotion detection, and aspect-based sentiment analysis on the 'text' field of a document.
     """
     if "text" in doc and isinstance(doc["text"], str):
-        sentiment = sentiment_analyzer(doc["text"])
+        text = doc["text"]
+        sentiment = sentiment_analyzer(text)
         doc['sentiment'] = sentiment
+
+        emotions = emotion_detector(text)
+        doc['emotions'] = emotions
+
+        aspects = aspect_extractor.extract_aspect(inference_source=[text])
+        doc['aspects'] = aspects
+
     return {"processed": True, "raw": doc}
 
 def worker_loop():
