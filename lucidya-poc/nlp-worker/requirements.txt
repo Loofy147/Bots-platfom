@@ -9,3 +9,5 @@ transformers
 sentence-transformers
 bertopic
 pytest
+torch
+scipy
