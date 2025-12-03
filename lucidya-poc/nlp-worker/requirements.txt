@@ -11,3 +11,4 @@ bertopic
 pytest
 torch
 scipy
+pyabsa
