@@ -8,7 +8,8 @@ import threading
 from transformers import pipeline
 
 # Load sentiment analysis model
-sentiment_analyzer = pipeline("sentiment-analysis")
+sentiment_analyzer = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment")
+emotion_detector = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base", return_all_scores=True)
 
 # Configuration
 OPENSEARCH_HOST = os.environ.get('OPENSEARCH_HOST', 'http://localhost:9200')
@@ -58,11 +59,15 @@ async def ingest_tweets(request: Request):
 
 def nlp_pipeline(doc):
     """
-    Performs sentiment analysis on the 'text' field of a document.
+    Performs sentiment analysis and emotion detection on the 'text' field of a document.
     """
     if "text" in doc and isinstance(doc["text"], str):
         sentiment = sentiment_analyzer(doc["text"])
         doc['sentiment'] = sentiment
+
+        emotions = emotion_detector(doc["text"])
+        doc['emotions'] = emotions
+
     return {"processed": True, "raw": doc}
 
 def worker_loop():
