@@ -1,0 +1,24 @@
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+env/
+venv/
+
+# IDEs
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,14 @@
+[
+  {
+    "source": "twitter",
+    "text": "Just had the best customer service experience with @lucidya! They were so helpful and resolved my issue in minutes. #CX #SocialListening",
+    "timestamp": "2023-10-27T10:00:00Z",
+    "author": "jane_doe"
+  },
+  {
+    "source": "call_center",
+    "text": "i am very frustrated with the new update it is not working as expected and i have been on hold for thirty minutes",
+    "timestamp": "2023-10-27T10:05:00Z",
+    "author": "john_smith"
+  }
+]
