@@ -5,7 +5,6 @@ from fastapi import FastAPI, Request
 from opensearchpy import OpenSearch
 import redis
 import threading
-import tweepy
 from transformers import pipeline
 
 # Load sentiment analysis model
