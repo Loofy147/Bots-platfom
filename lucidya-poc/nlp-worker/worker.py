@@ -31,6 +31,31 @@ async def ingest_data(request: Request):
     redis_client.rpush(REDIS_QUEUE, json.dumps(data))
     return {"status": "queued"}
 
+@app.post("/ingest_tweets")
+async def ingest_tweets(request: Request):
+    """
+    API endpoint to ingest tweets. Fetches tweets and puts them onto the Redis queue.
+    """
+    data = await request.json()
+    query = data.get("query")
+    if not query:
+        return {"status": "error", "message": "Missing query parameter"}
+
+    bearer_token = os.environ.get("TWITTER_BEARER_TOKEN")
+    if not bearer_token:
+        return {"status": "error", "message": "Twitter API credentials not configured"}
+
+    client = tweepy.Client(bearer_token)
+    response = client.search_recent_tweets(query, max_results=10)
+
+    if response.data:
+        for tweet in response.data:
+            tweet_doc = {"text": tweet.text}
+            redis_client.rpush(REDIS_QUEUE, json.dumps(tweet_doc))
+        return {"status": "queued", "count": len(response.data)}
+    else:
+        return {"status": "no tweets found"}
+
 def nlp_pipeline(doc):
     """
     Performs sentiment analysis on the 'text' field of a document.
